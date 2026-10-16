@@ -4,7 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,42 +16,46 @@ import com.example.studentorganizer.components.AppBar
 private val Navy = Color(0xFF17324D)
 
 @Composable
-fun SettingsScreen() {
-    var darkMode by remember { mutableStateOf(false) }
-    var notifications by remember { mutableStateOf(true) }
-    var startScreen by remember { mutableStateOf("Dashboard") }
+fun SettingsScreen(
+    darkMode: Boolean,
+    notifications: Boolean,
+    startScreen: String,
+    onDarkModeChange: (Boolean) -> Unit,
+    onNotificationsChange: (Boolean) -> Unit,
+    onStartScreenChange: (String) -> Unit
+) {
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         AppBar("Settings")
-        Text("Preferences", color = Navy, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text("Preferences", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(Modifier.height(10.dp))
-        Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(16.dp)) {
+        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), shape = RoundedCornerShape(16.dp)) {
             Column(Modifier.padding(16.dp)) {
                 Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("Dark Mode", color = Navy, fontWeight = FontWeight.SemiBold)
-                        Text("Use a darker appearance", color = Color.Gray, fontSize = 12.sp)
+                        Text("Dark Mode", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
+                        Text("Use a darker appearance", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                     }
-                    Switch(checked = darkMode, onCheckedChange = { darkMode = it })
+                    Switch(checked = darkMode, onCheckedChange = onDarkModeChange)
                 }
                 HorizontalDivider()
                 Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("Push Notifications", color = Navy, fontWeight = FontWeight.SemiBold)
-                        Text("Assignment reminders", color = Color.Gray, fontSize = 12.sp)
+                        Text("Assignment Reminders", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
+                        Text("Toggle reminder preference", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                     }
-                    Checkbox(checked = notifications, onCheckedChange = { notifications = it })
+                    Switch(checked = notifications, onCheckedChange = onNotificationsChange)
                 }
             }
         }
         Spacer(Modifier.height(22.dp))
-        Text("Default Start Screen", color = Navy, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text("Default Start Screen", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 18.sp)
         listOf("Dashboard", "Assignments").forEach { option ->
-            Row(Modifier.fillMaxWidth().clickable { startScreen = option }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(selected = startScreen == option, onClick = { startScreen = option })
-                Text(option, color = Navy)
+            Row(Modifier.fillMaxWidth().clickable { onStartScreenChange(option) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(selected = startScreen == option, onClick = { onStartScreenChange(option) })
+                Text(option, color = MaterialTheme.colorScheme.onSurface)
             }
         }
         Spacer(Modifier.height(12.dp))
-        Text("Preferences are kept in memory for this session only.", color = Color.Gray, fontSize = 12.sp)
+        Text("Preferences apply for this app session. Reminder toggle stores a preference only; it does not schedule Android notifications.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
     }
 }
