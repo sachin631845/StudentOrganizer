@@ -1,3 +1,4 @@
+
 package com.example.studentorganizer.screens
 
 import androidx.compose.foundation.clickable
@@ -16,31 +17,93 @@ import com.example.studentorganizer.components.AppBar
 import com.example.studentorganizer.components.AssignmentCard
 import com.example.studentorganizer.models.Assignment
 
-private val Navy = Color(0xFF17324D)
 private val Blue = Color(0xFF356AE6)
 
 @Composable
-fun AssignmentsScreen(assignments: List<Assignment>, onToggle: (Int) -> Unit) {
+fun AssignmentsScreen(
+    assignments: List<Assignment>,
+    onToggle: (Int) -> Unit
+) {
     var filter by remember { mutableStateOf("All") }
-    val filtered = assignments.filter {
-        when (filter) { "Pending" -> !it.completed; "Completed" -> it.completed; else -> true }
+
+    val filtered = assignments.filter { assignment ->
+        when (filter) {
+            "Pending" -> !assignment.completed
+            "Completed" -> assignment.completed
+            else -> true
+        }
     }
-    Column(Modifier.fillMaxSize()) {
+
+    Column(modifier = Modifier.fillMaxSize()) {
         AppBar("My Assignments")
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             listOf("All", "Pending", "Completed").forEach { option ->
-                Row(Modifier.clickable { filter = option }.padding(end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = filter == option, onClick = { filter = option }, colors = RadioButtonDefaults.colors(selectedColor = Blue))
-                    Text(option, color = Navy)
+                Row(
+                    modifier = Modifier
+                        .clickable { filter = option }
+                        .padding(end = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = filter == option,
+                        onClick = { filter = option },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Blue
+                        )
+                    )
+                    Text(
+                        text = option,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }
+
         if (filtered.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("No assignments in this filter.", color = Color.Gray) }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No assignments in this filter.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         } else {
-            LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
-                items(filtered, key = { it.id }) { a ->
-                    AssignmentCard(a.title, a.course, a.dueDate, a.priority, a.completed) { onToggle(a.id) }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 8.dp,
+                    bottom = 100.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(
+                    items = filtered,
+                    key = { it.id }
+                ) { assignment ->
+                    AssignmentCard(
+                        assignment.title,
+                        assignment.course,
+                        assignment.dueDate,
+                        assignment.priority,
+                        assignment.completed
+                    ) {
+                        onToggle(assignment.id)
+                    }
                 }
             }
         }
