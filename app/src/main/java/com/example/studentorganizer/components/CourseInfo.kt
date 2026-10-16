@@ -1,6 +1,7 @@
 package com.example.studentorganizer.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,19 +12,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
 
 private val Navy = Color(0xFF17324D)
 private val Blue = Color(0xFF356AE6)
 private val PaleBlue = Color(0xFFEAF0FF)
 
 @Composable
-fun CourseInfo(courseName: String, courseCode: String, instructor: String, progress: Float) {
+fun CourseInfo(
+    courseName: String,
+    courseCode: String,
+    instructor: String,
+    progress: Float,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier.width(230.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.width(230.dp).clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -32,20 +39,23 @@ fun CourseInfo(courseName: String, courseCode: String, instructor: String, progr
                 Icon(Icons.Default.MenuBook, contentDescription = null, tint = Blue)
             }
             Spacer(Modifier.height(12.dp))
-            Text(courseName, fontWeight = FontWeight.Bold, color = Navy, fontSize = 16.sp)
+            Text(courseName, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
             Text(courseCode, color = Blue, fontSize = 12.sp)
             Spacer(Modifier.height(5.dp))
-            Text("Instructor: $instructor", color = Color.Gray, fontSize = 12.sp)
+            Text("Instructor: $instructor", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             Spacer(Modifier.height(14.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Progress", color = Color.Gray, fontSize = 12.sp)
-                Text("${(progress * 100).toInt()}%", color = Navy, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Text("Progress", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                Text("${(progress.coerceIn(0f, 1f) * 100).toInt()}%", color = MaterialTheme.colorScheme.onSurface, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
             }
             Spacer(Modifier.height(6.dp))
             LinearProgressIndicator(
-                progress = { progress }, modifier = Modifier.fillMaxWidth().height(6.dp),
+                progress = { progress.coerceIn(0f, 1f) },
+                modifier = Modifier.fillMaxWidth().height(6.dp),
                 color = Blue, trackColor = PaleBlue
             )
+            Spacer(Modifier.height(6.dp))
+            Text("Tap to view assignments", color = Blue, fontSize = 10.sp)
         }
     }
 }
