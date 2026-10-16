@@ -1,5 +1,6 @@
 package com.example.studentorganizer.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -26,31 +27,52 @@ private val Blue = Color(0xFF356AE6)
 private val PaleBlue = Color(0xFFEAF0FF)
 
 @Composable
-fun DashboardScreen(courses: List<Course>, assignments: List<Assignment>, onToggle: (Int) -> Unit) {
+fun DashboardScreen(
+    studentName: String,
+    courses: List<Course>,
+    assignments: List<Assignment>,
+    onToggle: (Int) -> Unit,
+    onViewAssignments: () -> Unit
+) {
+    //it composes list items as needed, which is useful when displaying many items.
     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
         item {
             Column(Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
-                Text("Welcome back,", color = Color.Gray, fontSize = 14.sp)
-                Text("Sachin! 👋", color = Navy, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                Text("Here's your learning overview.", color = Color.Gray, fontSize = 14.sp)
+                Text("Welcome back,", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                Text(if (studentName.isBlank()) "Student 👋" else "$studentName 👋", color = MaterialTheme.colorScheme.onSurface, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                Text("Here's your learning overview.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 Spacer(Modifier.height(20.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    StatCard("Active Courses", "4", Icons.Default.MenuBook, Modifier.weight(1f))
+                    StatCard("Active Courses", courses.size.toString(), Icons.Default.MenuBook, Modifier.weight(1f))
                     StatCard("Pending Tasks", assignments.count { !it.completed }.toString(), Icons.Default.Assignment, Modifier.weight(1f))
                 }
                 Spacer(Modifier.height(24.dp))
-                SectionHeading("Active Courses", "View all")
+                SectionHeading("Active Courses", "View all", onViewAssignments)
+            }
+        }
+        item { //horizontal scrolling list
+            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(courses) { course ->
+                    CourseInfo(course.name, course.code, course.instructor, course.progress, onClick = onViewAssignments)
+                }
             }
         }
         item {
-            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(courses) { CourseInfo(it.name, it.code, it.instructor, it.progress) }
+            Column(Modifier.padding(horizontal = 20.dp).padding(top = 24.dp)) {
+                SectionHeading("Urgent Deadlines", "View all", onViewAssignments)
             }
         }
-        item { Column(Modifier.padding(horizontal = 20.dp).padding(top = 24.dp)) { SectionHeading("Urgent Deadlines", "Upcoming") } }
-        items(assignments.filter { !it.completed }.take(2)) { a ->
+        if (assignments.none { !it.completed }) {
+            item {
+                Text("You're all caught up. Add an assignment with the + button.",
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        items(assignments.filter { !it.completed }.take(3), key = { it.id }) { assignment ->
             Box(Modifier.padding(horizontal = 20.dp)) {
-                AssignmentCard(a.title, a.course, a.dueDate, a.priority, a.completed) { onToggle(a.id) }
+                AssignmentCard(assignment.title, assignment.course, assignment.dueDate, assignment.priority, assignment.completed) {
+                    onToggle(assignment.id)
+                }
             }
         }
     }
@@ -58,20 +80,20 @@ fun DashboardScreen(courses: List<Course>, assignments: List<Assignment>, onTogg
 
 @Composable
 private fun StatCard(title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier = Modifier) {
-    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(16.dp)) {
+    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), shape = RoundedCornerShape(16.dp)) {
         Column(Modifier.padding(16.dp)) {
             Icon(icon, contentDescription = null, tint = Blue)
             Spacer(Modifier.height(10.dp))
-            Text(value, fontSize = 27.sp, color = Navy, fontWeight = FontWeight.Bold)
-            Text(title, color = Color.Gray, fontSize = 12.sp)
+            Text(value, fontSize = 27.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+            Text(title, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
         }
     }
 }
 
 @Composable
-private fun SectionHeading(title: String, trailing: String) {
+private fun SectionHeading(title: String, trailing: String, onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = Navy, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        Text(trailing, color = Blue, fontSize = 12.sp)
+        Text(title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(trailing, color = Blue, fontSize = 12.sp, modifier = Modifier.clickable(onClick = onClick).padding(6.dp))
     }
 }
