@@ -17,3 +17,5 @@ data class Assignment(
     val reminder: Boolean = false,
     val completed: Boolean = false
 )
+//creates a class designed to hold data. Kotlin automatically provides useful functions such as copy(),
+// equals() and toString().
