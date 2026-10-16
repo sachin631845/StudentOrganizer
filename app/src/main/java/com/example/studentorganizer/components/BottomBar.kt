@@ -17,7 +17,7 @@ private val PaleBlue = Color(0xFFEAF0FF)
 
 @Composable
 fun BottomBar(navController: NavHostController, currentRoute: String?) {
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         val tabs = listOf(
             Triple(Screen.Dashboard, Icons.Default.Home, "Dashboard"),
             Triple(Screen.Assignments, Icons.Default.CheckCircle, "Assignments"),
