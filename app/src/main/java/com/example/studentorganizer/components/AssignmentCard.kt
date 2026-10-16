@@ -23,20 +23,20 @@ fun AssignmentCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = isCompleted, onCheckedChange = { onToggleComplete() }, colors = CheckboxDefaults.colors(checkedColor = Green))
             Column(Modifier.weight(1f)) {
-                Text(title, color = Navy, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                Text(course, color = Color.Gray, fontSize = 12.sp)
+                Text(title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                Text(course, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
                 Spacer(Modifier.height(5.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text(dueDate, color = Color.Gray, fontSize = 11.sp)
+                    Text(dueDate, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                 }
             }
             Column(horizontalAlignment = Alignment.End) {
